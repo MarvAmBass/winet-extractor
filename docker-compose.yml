@@ -1,0 +1,10 @@
+services:
+  winet-extractor:
+    restart: unless-stopped
+    build:
+      context: .
+    volumes:
+      - ./env:/usr/src/app/.env:ro
+    network_mode: host
+    environment:
+      - TZ=Europe/Berlin

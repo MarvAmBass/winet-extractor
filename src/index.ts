@@ -5,7 +5,6 @@ import {isTextStatus, isNumericStatus} from './types/DeviceStatus';
 import Winston from 'winston';
 import fs from 'fs';
 import util from 'util';
-import {Analytics} from './analytics';
 const dotenv = require('dotenv');
 
 const logger = Winston.createLogger({
@@ -32,7 +31,6 @@ let options = {
   winet_user: '',
   winet_pass: '',
   poll_interval: '10',
-  analytics: true,
   ssl: false,
 };
 
@@ -49,7 +47,6 @@ if (fs.existsSync('/data/options.json')) {
   options.winet_user = process.env.WINET_USER || '';
   options.winet_pass = process.env.WINET_PASS || '';
   options.poll_interval = process.env.POLL_INTERVAL || '10';
-  options.analytics = process.env.ANALYTICS === 'true';
   options.ssl = process.env.SSL === 'true';
 }
 
@@ -72,8 +69,7 @@ const winet = new winetHandler(
   lang,
   frequency,
   options.winet_user || '',
-  options.winet_pass || '',
-  new Analytics(options.analytics || true)
+  options.winet_pass || ''
 );
 
 const configuredSensors: string[] = [];
