@@ -1,6 +1,7 @@
 services:
   winet-extractor:
     restart: unless-stopped
+    image: winet-extractor
     build:
       context: .
     volumes:

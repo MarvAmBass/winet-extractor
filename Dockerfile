@@ -4,10 +4,7 @@ RUN apk add --no-cache tzdata
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-RUN npm ci
-
 COPY . .
-RUN npm run compile
+RUN npm ci && npm run compile
 
 CMD ["node", "build/src/index.js"]
