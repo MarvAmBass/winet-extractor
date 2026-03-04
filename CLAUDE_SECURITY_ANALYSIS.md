@@ -1,50 +1,37 @@
 # Security Analysis
 
-## Security Issues
-
-### 1. Credentials leaked via `console.log(process.env)` — `index.ts:54`
-When `WINET_HOST` is missing, the entire environment is printed, exposing `WINET_PASS`, `MQTT_URL` (which may contain credentials), and anything else in the environment.
-
----
-
 ## Crash / Reliability Issues
 
-### 2. `JSON.parse` without try/catch — `winetHandler.ts:187`
+### 1. `JSON.parse` without try/catch — `winetHandler.ts:187`
 Malformed WebSocket data will throw an uncaught exception and crash the process. There's no error handling around `JSON.parse(data.toString())`.
 
-### 3. `throw` inside async MQTT callbacks — `homeassistant.ts:41, 73, 107, 198`
+### 2. `throw` inside async MQTT callbacks — `homeassistant.ts:41, 73, 107, 198`
 Throwing inside a callback (e.g., MQTT publish callback) causes an unhandled exception rather than propagating the error to a catch handler. This will crash the process.
 
-### 4. `throw` inside WebSocket event handler — `winetHandler.ts:270–272`
+### 3. `throw` inside WebSocket event handler — `winetHandler.ts:270–272`
 ```typescript
 throw new Error('Failed to authenticate');
 ```
 Same issue — throwing inside a WebSocket `message` handler is an unhandled exception. A reconnect attempt would be safer.
 
-### 5. Array access without bounds check — `winetHandler.ts:489`
+### 4. Array access without bounds check — `winetHandler.ts:489`
 ```typescript
 this.currentDevice = this.devices[0].dev_id;
 ```
 If `this.devices` is empty (e.g., all devices were filtered/skipped), this throws a `TypeError`. No guard exists.
 
-### 6. Unchecked `DeviceTypeStages` lookup — `winetHandler.ts:293`
+### 5. Unchecked `DeviceTypeStages` lookup — `winetHandler.ts:293`
 ```typescript
 if (DeviceTypeStages[device.dev_type].length === 0)
 ```
 If `device.dev_type` is a value not in the lookup table, this throws `TypeError: Cannot read properties of undefined`. Unknown device types from the server would crash the handler.
 
-### 7. No error handling on `options.json` parse — `index.ts:40`
-`JSON.parse(rawOptions)` can throw if the file is malformed. There's no try/catch, so a corrupt config file crashes startup with an unhelpful error.
-
 ---
 
 ## Minor Issues
 
-### 8. `response.on('error')` retry logic — `getProperties.ts:30–38`
+### 6. `response.on('error')` retry logic — `getProperties.ts:30–38`
 The `res.on('error', ...)` handler retries with SSL, but `res` is the HTTP response object — its `error` event is rarely fired; the meaningful one is on the request object (`.on('error')`). This retry path is likely unreachable in practice.
-
-### 9. No schema validation for `options.json`
-The parsed options object is used directly without validating required fields, types, or unexpected keys. If the file omits `mqtt_url`, the check at line 58 catches it, but things like a non-string `poll_interval` or misspelled key would silently use defaults.
 
 ---
 

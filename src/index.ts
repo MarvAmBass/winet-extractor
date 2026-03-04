@@ -24,39 +24,29 @@ const logger = Winston.createLogger({
   transports: [new Winston.transports.Console()],
 });
 
-let options = {
-  winet_host: '',
-  mqtt_url: '',
-  mqtt_prefix: '',
-  winet_user: '',
-  winet_pass: '',
-  poll_interval: '10',
-  ssl: false,
-};
-
-// Check if the file exists
-if (fs.existsSync('/data/options.json')) {
-  const rawOptions = fs.readFileSync('/data/options.json', 'utf8');
-  options = JSON.parse(rawOptions);
-} else {
+if (fs.existsSync('.env')) {
+  logger.info('Found .env file, loading configuration from it');
   dotenv.config();
-
-  options.winet_host = process.env.WINET_HOST || '';
-  options.mqtt_url = process.env.MQTT_URL || '';
-  options.mqtt_prefix = process.env.MQTT_PREFIX || 'homeassistant';
-  options.winet_user = process.env.WINET_USER || '';
-  options.winet_pass = process.env.WINET_PASS || '';
-  options.poll_interval = process.env.POLL_INTERVAL || '10';
-  options.ssl = process.env.SSL === 'true';
 }
 
+const options = {
+  winet_host: process.env.WINET_HOST || '',
+  mqtt_url: process.env.MQTT_URL || '',
+  mqtt_prefix: process.env.MQTT_PREFIX || 'homeassistant',
+  winet_user: process.env.WINET_USER || '',
+  winet_pass: process.env.WINET_PASS || '',
+  poll_interval: process.env.POLL_INTERVAL || '10',
+  ssl: process.env.SSL === 'true',
+};
+
 if (!options.winet_host) {
-  console.log(process.env);
-  throw new Error('No host provided');
+  logger.error('WINET_HOST is not set - please configure the WiNet dongle IP or hostname');
+  process.exit(1);
 }
 
 if (!options.mqtt_url) {
-  throw new Error('No mqtt provided');
+  logger.error('MQTT_URL is not set - please configure the MQTT broker URL');
+  process.exit(1);
 }
 
 const lang = 'en_US';

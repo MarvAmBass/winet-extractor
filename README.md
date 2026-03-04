@@ -39,16 +39,34 @@ Other devices connected to a Sungrow Winet S or S2 adapter may also work but hav
 
 Before starting, you will need to know the hostname or IP address of your WiNet dongle and have your MQTT broker configured. This has been tested with the Mosquitto broker and Home Assistant MQTT autodiscovery.
 
-1. Clone the repository and copy `env.example` to `env`, then fill in the configuration parameters:
+### Configuration
 
-- `WINET_HOST` — IP address or hostname of your WiNet-S2 adapter, e.g. `192.168.1.100`
-- `MQTT_URL` — in the format `mqtt://<username>:<password>@<host>`
-- `WINET_USER` / `WINET_PASS` — (optional) only needed if you changed the default WiNet credentials. If left blank, the defaults will be used.
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `WINET_HOST` | yes | — | IP address or hostname of your WiNet-S2 adapter, e.g. `192.168.1.100` |
+| `MQTT_URL` | yes | — | MQTT broker URL, e.g. `mqtt://username:password@192.168.1.10` |
+| `MQTT_PREFIX` | no | `homeassistant` | MQTT topic prefix |
+| `WINET_USER` | no | — | WiNet login user — only needed if you changed the default credentials |
+| `WINET_PASS` | no | — | WiNet login password — only needed if you changed the default credentials |
+| `POLL_INTERVAL` | no | `10` | Polling interval in seconds |
+| `SSL` | no | `false` | Set to `true` to force SSL for the WiNet connection |
 
-2. Start the container:
+### Running with Docker (recommended)
+
+Edit `docker-compose.yml` and fill in at minimum `WINET_HOST` and `MQTT_URL`, then start the container:
 
 ```sh
 docker compose up -d
+```
+
+### Running locally without Docker
+
+Copy `env.example` to `.env` and fill in your values — the application will automatically load it on startup:
+
+```sh
+cp env.example .env
+# edit .env
+npm run compile && npm run cli
 ```
 
 ### Useful Entities

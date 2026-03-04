@@ -4,8 +4,13 @@ services:
     image: ghcr.io/marvambass/winet-extractor:latest
     build:
       context: .
-    volumes:
-      - ./env:/usr/src/app/.env:ro
     network_mode: host
     environment:
       - TZ=Europe/Berlin
+      - WINET_HOST=192.168.1.100
+      - MQTT_URL=mqtt://<username>:<password>@<host>
+      - MQTT_PREFIX=homeassistant
+      - WINET_USER=
+      - WINET_PASS=
+      - POLL_INTERVAL=10
+      # - SSL=false
