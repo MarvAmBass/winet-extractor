@@ -1,7 +1,7 @@
 services:
   winet-extractor:
     restart: unless-stopped
-    image: winet-extractor
+    image: ghcr.io/marvambass/winet-extractor:latest
     build:
       context: .
     volumes:
