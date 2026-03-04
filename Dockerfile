@@ -1,6 +1,6 @@
-FROM node:lts-alpine
+FROM alpine
 
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache nodejs npm tzdata
 
 WORKDIR /usr/src/app
 
