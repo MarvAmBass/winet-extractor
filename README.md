@@ -53,6 +53,12 @@ Before starting, you will need to know the hostname or IP address of your WiNet 
 
 ### Running with Docker (recommended)
 
+A pre-built image is published to the GitHub Container Registry and supports `linux/amd64`, `linux/arm64`, `linux/arm/v7`, and `linux/arm/v6` — covering x86 servers and all common Raspberry Pi models. The image is based on vanilla Alpine Linux with Node.js installed via `apk`, keeping the footprint small and the architecture support broad.
+
+```
+ghcr.io/marvambass/winet-extractor:latest
+```
+
 Edit `docker-compose.yml` and fill in at minimum `WINET_HOST` and `MQTT_URL`, then start the container:
 
 ```sh
